@@ -1,0 +1,284 @@
+/* Masala Agency Custom CSS */
+
+:root {
+    --primary-color: #c45d2b;     /* Masala orange/brown */
+    --secondary-color: #8b4513;    /* Dark brown */
+    --accent-color: #ff9933;       /* Saffron */
+    --light-bg: #fff5e6;           /* Cream background */
+    --dark-text: #4a2c1a;          /* Dark brown text */
+}
+
+/* General Styles */
+body {
+    background-color: #fef9f2;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dark-text);
+}
+
+/* Navbar Styling */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    margin: 0 0.2rem;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    background-color: rgba(255,255,255,0.2);
+    color: white !important;
+}
+
+/* Hero Section */
+.bg-light.rounded-3 {
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ffe4cc 100%) !important;
+    border-left: 5px solid var(--primary-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.display-5 {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+/* Product Cards */
+.product-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    background: white;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(196, 93, 43, 0.15);
+}
+
+.product-card img {
+    transition: transform 0.5s;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+.product-card .card-body {
+    padding: 1.2rem;
+}
+
+.product-card .card-title {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-card .card-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.product-card .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.product-card .btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.product-card .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 20px;
+}
+
+.product-card .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Price Styling */
+.h5.mb-0 {
+    color: var(--primary-color) !important;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.text-muted.text-decoration-line-through {
+    color: #999 !important;
+    font-size: 0.9rem;
+}
+
+/* Section Headers */
+h2 {
+    color: var(--secondary-color);
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.btn-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* All Products Small Cards */
+.row-cols-md-6 .card {
+    background: white;
+    border: 1px solid #ffe4cc;
+    border-radius: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.row-cols-md-6 .card:hover {
+    background: var(--light-bg);
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.row-cols-md-6 .card small {
+    color: var(--dark-text);
+    font-weight: 500;
+}
+
+.row-cols-md-6 .card strong {
+    color: var(--primary-color);
+}
+
+/* Product Detail Page */
+.product-detail-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.product-detail-card .card-title {
+    color: var(--secondary-color);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.price-badge {
+    background: var(--light-bg);
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+/* Login/Register Forms */
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    border-radius: 20px 20px 0 0 !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    color: white;
+    font-weight: 600;
+    padding: 1.2rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(196, 93, 43, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    padding: 0.8rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(196, 93, 43, 0.3);
+}
+
+/* Footer */
+footer {
+    background: var(--secondary-color) !important;
+    color: white !important;
+    margin-top: 3rem !important;
+}
+
+footer p {
+    color: rgba(255,255,255,0.9);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 5px solid #28a745;
+    border-radius: 10px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 5px solid #dc3545;
+    border-radius: 10px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .product-card .card-title {
+        font-size: 1rem;
+    }
+    
+    h2:after {
+        width: 40px;
+    }
+}

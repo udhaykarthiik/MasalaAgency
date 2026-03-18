@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>{{ category }}</h1>
+        <p class="text-muted">Browse all {{ category }} products</p>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">← Back to Home</a>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    {% for product in products %}
+    <div class="col">
+        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-decoration-none">
+            <div class="card h-100 product-card">
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        No Image
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title text-dark">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.description[:50] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="h5 mb-0 text-dark">₹{{ product.price }}</span>
+                            {% if product.original_price and product.original_price > product.price %}
+                                <small class="text-muted text-decoration-line-through">₹{{ product.original_price }}</small>
+                            {% endif %}
+                            <small class="d-block text-muted">{{ product.unit }}</small>
+                        </div>
+                        {% if current_user.is_authenticated %}
+                            <span class="btn btn-sm btn-primary">Order</span>
+                        {% else %}
+                            <span class="btn btn-sm btn-outline-primary">View</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not products %}
+<div class="row">
+    <div class="col-12 text-center py-5">
+        <h3>No products found in this category</h3>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Browse All Products</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">Edit Product: {{ product.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Product Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ product.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category *</label>
+                            <input type="text" class="form-control" id="category" name="category" 
+                                   value="{{ product.category }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="price" class="form-label">Price (₹) *</label>
+                            <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                   value="{{ product.price }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="stock" class="form-label">Stock *</label>
+                            <input type="number" class="form-control" id="stock" name="stock" 
+                                   value="{{ product.stock }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="unit" class="form-label">Unit *</label>
+                            <select class="form-control" id="unit" name="unit" required>
+                                <option value="kg" {% if product.unit == 'kg' %}selected{% endif %}>kg</option>
+                                <option value="g" {% if product.unit == 'g' %}selected{% endif %}>g</option>
+                                <option value="piece" {% if product.unit == 'piece' %}selected{% endif %}>piece</option>
+                                <option value="packet" {% if product.unit == 'packet' %}selected{% endif %}>packet</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ product.description }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image_url" class="form-label">Image URL</label>
+                        <input type="url" class="form-control" id="image_url" name="image_url" 
+                               value="{{ product.image_url }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning">Update Product</button>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

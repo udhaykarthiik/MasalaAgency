@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Track Order #{{ order.order_number }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Order Details</h5>
+                        <p><strong>Order Date:</strong> {{ order.order_date.strftime('%d-%m-%Y %H:%M') }}</p>
+                        <p><strong>Product:</strong> {{ order.product.name }}</p>
+                        <p><strong>Quantity:</strong> {{ order.quantity }} {{ order.product.unit }}</p>
+                        <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Customer Details</h5>
+                        <p><strong>Shop:</strong> {{ order.customer.shop_name }}</p>
+                        <p><strong>Phone:</strong> {{ order.customer.phone }}</p>
+                        <p><strong>Address:</strong> {{ order.customer.address or 'Not provided' }}</p>
+                    </div>
+                </div>
+                
+                <h5>Order Status</h5>
+                <div class="progress mb-3" style="height: 30px;">
+                    {% if order.status == 'pending' %}
+                        <div class="progress-bar bg-warning" style="width: 25%">Pending</div>
+                    {% elif order.status == 'confirmed' %}
+                        <div class="progress-bar bg-info" style="width: 50%">Confirmed</div>
+                    {% elif order.status == 'dispatched' %}
+                        <div class="progress-bar bg-primary" style="width: 75%">Dispatched</div>
+                    {% elif order.status == 'delivered' %}
+                        <div class="progress-bar bg-success" style="width: 100%">Delivered</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <table class="table table-bordered">
+                            <tr class="{% if order.status == 'pending' %}table-warning{% endif %}">
+                                <td width="50">1.</td>
+                                <td>Order Placed</td>
+                                <td>{{ order.order_date.strftime('%d-%m-%Y %H:%M') }}</td>
+                            </tr>
+                            <tr class="{% if order.status == 'confirmed' %}table-info{% endif %}">
+                                <td>2.</td>
+                                <td>Order Confirmed</td>
+                                <td>{% if order.status == 'confirmed' or order.status == 'dispatched' or order.status == 'delivered' %}Confirmed{% else %}Pending{% endif %}</td>
+                            </tr>
+                            <tr class="{% if order.status == 'dispatched' %}table-primary{% endif %}">
+                                <td>3.</td>
+                                <td>Order Dispatched</td>
+                                <td>{% if order.status == 'dispatched' or order.status == 'delivered' %}Dispatched{% else %}Pending{% endif %}</td>
+                            </tr>
+                            <tr class="{% if order.status == 'delivered' %}table-success{% endif %}">
+                                <td>4.</td>
+                                <td>Order Delivered</td>
+                                <td>{% if order.status == 'delivered' %}{{ order.delivery_date.strftime('%d-%m-%Y') if order.delivery_date else 'Delivered' }}{% else %}Pending{% endif %}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('profile') }}" class="btn btn-primary">Back to My Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

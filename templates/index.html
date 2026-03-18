@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">Welcome to Masala Agency</h1>
+                <p class="col-md-8 fs-4">Fresh and authentic masalas delivered to your shop. Register now to start ordering!</p>
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Register as Shop Owner</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Products by Category -->
+{% for category, products in products_by_category.items() %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-3">{{ category }}</h2>
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            {% for product in products %}
+            <div class="col">
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-decoration-none">
+                    <div class="card h-100 product-card">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                No Image
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.description[:50] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="h5 mb-0 text-dark">₹{{ product.price }}</span>
+                                    {% if product.original_price and product.original_price > product.price %}
+                                        <small class="text-muted text-decoration-line-through">₹{{ product.original_price }}</small>
+                                    {% endif %}
+                                    <small class="d-block text-muted">{{ product.unit }}</small>
+                                </div>
+                                {% if current_user.is_authenticated %}
+                                    <span class="btn btn-sm btn-primary">Order</span>
+                                {% else %}
+                                    <span class="btn btn-sm btn-outline-primary">View</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-end mt-2">
+            <a href="{{ url_for('category_products', category_name=category) }}" class="btn btn-link">View all {{ category }} →</a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- All Products Section (Small cards at bottom) -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="mb-3">All Products</h2>
+        <div class="row row-cols-1 row-cols-md-6 g-3">
+            {% for product in products[:6] %}
+            <div class="col">
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-decoration-none">
+                    <div class="card h-100 text-center p-2">
+                        <small class="text-dark">{{ product.name }}</small>
+                        <strong class="text-primary">₹{{ product.price }}</strong>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

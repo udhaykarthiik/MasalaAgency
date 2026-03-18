@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Shop Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Shop Name:</strong> {{ current_user.shop_name }}</p>
+                <p><strong>Owner:</strong> {{ current_user.owner_name }}</p>
+                <p><strong>Phone:</strong> {{ current_user.phone }}</p>
+                <p><strong>Address:</strong> {{ current_user.address }}</p>
+                <p><strong>Member Since:</strong> {{ current_user.created_at.strftime('%d-%m-%Y') }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">My Orders</h5>
+            </div>
+            <div class="card-body">
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Track</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>{{ order.order_number }}</td>
+                                <td>{{ order.order_date.strftime('%d-%m-%Y') }}</td>
+                                <td>{{ order.product.name }}</td>
+                                <td>{{ order.quantity }} {{ order.product.unit }}</td>
+                                <td>₹{{ order.total_amount }}</td>
+                                <td>
+                                    <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'delivered' %}bg-success{% else %}bg-info{% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('track_order', order_number=order.order_number) }}" class="btn btn-sm btn-outline-primary">Track</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center">No orders yet. <a href="{{ url_for('index') }}">Browse products</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

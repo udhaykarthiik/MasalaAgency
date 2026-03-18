@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<!-- Product Detail Section -->
+<div class="row mb-4">
+    <div class="col-md-5">
+        <div class="card">
+            {% if product.image_url %}
+                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 300px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                    No Image
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ product.name }}</h1>
+                <p class="text-muted">Category: {{ product.category }}</p>
+                
+                <div class="mb-3">
+                    <h3 class="text-primary d-inline">₹{{ product.price }}</h3>
+                    {% if product.original_price and product.original_price > product.price %}
+                        <small class="text-muted text-decoration-line-through ms-2">₹{{ product.original_price }}</small>
+                        <span class="badge bg-success ms-2">Save ₹{{ product.original_price - product.price }}</span>
+                    {% endif %}
+                    <span class="badge bg-secondary ms-2">per {{ product.unit }}</span>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Description</h5>
+                    <p>{{ product.description }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Stock Availability</h5>
+                    {% if product.stock > 0 %}
+                        <p class="text-success">✅ In Stock ({{ product.stock }} {{ product.unit }} available)</p>
+                    {% else %}
+                        <p class="text-danger">❌ Out of Stock</p>
+                    {% endif %}
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                    {% if product.stock > 0 %}
+                    <form method="POST" action="{{ url_for('place_order', product_id=product.id) }}">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto">
+                                <label for="quantity" class="col-form-label"><strong>Quantity:</strong></label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" id="quantity" name="quantity" class="form-control" 
+                                       value="1" min="1" max="{{ product.stock }}" step="0.5" required>
+                            </div>
+                            <div class="col-auto">
+                                <span class="form-text">{{ product.unit }}</span>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg" disabled>Out of Stock</button>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        Please <a href="{{ url_for('login') }}" class="alert-link">login</a> to place order.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Similar Products Section -->
+{% if similar_products %}
+<div class="row mt-5">
+    <div class="col-12">
+        <h3>Similar Products ({{ product.category }})</h3>
+        <hr>
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            {% for similar in similar_products %}
+            <div class="col">
+                <div class="card h-100 product-card">
+                    <a href="{{ url_for('product_detail', product_id=similar.id) }}" class="text-decoration-none text-dark">
+                        {% if similar.image_url %}
+                            <img src="{{ similar.image_url }}" class="card-img-top" alt="{{ similar.name }}" style="height: 150px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ similar.name }}</h6>
+                            <p class="text-primary mb-2">₹{{ similar.price }}/{{ similar.unit }}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

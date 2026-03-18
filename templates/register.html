@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Shop Owner Registration</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="form-text">This will be your login ID</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+                        <div class="form-text">Minimum 6 characters</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Mobile Number (optional)</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" maxlength="10">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="shop_name" class="form-label">Shop Name *</label>
+                        <input type="text" class="form-control" id="shop_name" name="shop_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="owner_name" class="form-label">Owner Name</label>
+                        <input type="text" class="form-control" id="owner_name" name="owner_name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Shop Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100">Register</button>
+                </form>
+                
+                <hr>
+                <p class="text-center mb-0">
+                    Already have an account? 
+                    <a href="{{ url_for('login') }}">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
