@@ -5,12 +5,12 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
-import os
-from flask import send_from_directory, abort
+import mimetypes
+from flask import send_from_directory, abort, send_file, safe_join
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///masala.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -20,23 +20,18 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-with app.app_context():
-    db.create_all()
-    print("✅ Database tables created/verified!")
-
 # Database Models
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)  # NEW: Hashed password
-    phone = db.Column(db.String(15), unique=True, nullable=True)   # New (optional)
+    password = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(15), unique=True, nullable=True)
     shop_name = db.Column(db.String(100))
     owner_name = db.Column(db.String(100))
     address = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_agency = db.Column(db.Boolean, default=False)
     orders = db.relationship('Order', back_populates='customer', lazy=True)
-
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,28 +68,99 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Float)
     price = db.Column(db.Float)
-    
-@app.route('/static/images/<path:filename>')
-def serve_image(filename):
-    # Try to find the image in static/images folder
-    image_path = os.path.join(app.static_folder, 'images', filename)
-    
-    # If image exists, serve it
-    if os.path.exists(image_path):
-        return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
-    
-    # If not found, return a placeholder
-    return redirect(f"https://via.placeholder.com/300x200?text={filename.replace('.jpg','').replace('-','+')}")
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Image serving route with better error handling
+@app.route('/static/images/<path:filename>')
+def serve_image(filename):
+    """Serve images with fallback to placeholder"""
+    try:
+        # Construct full path safely
+        images_dir = os.path.join(app.static_folder, 'images')
+        filepath = os.path.join(images_dir, filename)
+        
+        # Check if file exists
+        if os.path.exists(filepath) and os.path.isfile(filepath):
+            # Determine mimetype
+            mimetype = mimetypes.guess_type(filename)[0] or 'image/jpeg'
+            return send_file(filepath, mimetype=mimetype)
+        else:
+            # Log missing file (will appear in Render logs)
+            print(f"⚠️ Image not found: {filename}")
+            # Return placeholder
+            return redirect(f"https://via.placeholder.com/300x200?text={filename.replace('.jpg','').replace('-','+')}")
+    except Exception as e:
+        print(f"❌ Error serving image {filename}: {str(e)}")
+        return redirect(f"https://via.placeholder.com/300x200?text=Image+Error")
+
+# Debug route to check images
+@app.route('/debug-images')
+def debug_images():
+    """Debug endpoint to check image status"""
+    import os
+    from flask import jsonify
+    
+    # Get image folder path
+    static_folder = app.static_folder
+    images_folder = os.path.join(static_folder, 'images')
+    
+    # Check what exists
+    images = []
+    if os.path.exists(images_folder):
+        images = os.listdir(images_folder)
+    
+    # Check first few products
+    products = Product.query.limit(5).all()
+    product_images = [{
+        'name': p.name,
+        'image_url': p.image_url,
+        'filename': os.path.basename(p.image_url) if p.image_url else None
+    } for p in products]
+    
+    return jsonify({
+        'static_folder_exists': os.path.exists(static_folder),
+        'static_folder_path': static_folder,
+        'images_folder_exists': os.path.exists(images_folder),
+        'images_folder_path': images_folder,
+        'images_in_folder': images[:15],  # First 15 images
+        'image_count': len(images),
+        'sample_products': product_images,
+        'total_products': Product.query.count()
+    })
+
+# Route to fix image URLs in database
+@app.route('/fix-image-urls')
+def fix_image_urls():
+    """Temporary route to fix image URLs in database"""
+    products = Product.query.all()
+    fixed = []
+    
+    for p in products:
+        old_url = p.image_url
+        # Extract filename from URL or create from name
+        if not p.image_url or 'placeholder' in p.image_url:
+            # Generate filename from product name
+            filename = p.name.lower().replace(' ', '-') + '.jpg'
+            p.image_url = f"/static/images/{filename}"
+            fixed.append({
+                'name': p.name,
+                'old': old_url,
+                'new': p.image_url
+            })
+    
+    db.session.commit()
+    return jsonify({
+        'fixed_count': len(fixed),
+        'fixed_products': fixed
+    })
+
 # Create database tables
 with app.app_context():
     db.create_all()
-    print("Database created successfully!")
+    print("✅ Database tables created/verified!")
 
 # Command to add sample products
 @app.cli.command("add-sample-products")
@@ -211,7 +277,7 @@ def add_sample_products():
 @app.cli.command("create-agency")
 def create_agency():
     """Create agency admin user"""
-    hashed_password = generate_password_hash('admin123')  # Default password
+    hashed_password = generate_password_hash('admin123')
     agency = User(
         email="admin@masalaagency.com",
         password=hashed_password,
@@ -255,7 +321,7 @@ def category_products(category_name):
     products = Product.query.filter_by(category=category_name).all()
     return render_template('category.html', category=category_name, products=products)
 
-# NEW: Normal Login Route
+# Login Route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -278,7 +344,7 @@ def login():
     
     return render_template('login.html')
 
-# NEW: Normal Register Route
+# Register Route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -289,13 +355,11 @@ def register():
         owner_name = request.form.get('owner_name')
         address = request.form.get('address')
         
-        # Check if user exists
         existing = User.query.filter_by(email=email).first()
         if existing:
             flash('Email already registered', 'danger')
             return redirect(url_for('register'))
         
-        # Create new user with hashed password
         hashed_password = generate_password_hash(password)
         new_user = User(
             email=email,
@@ -361,7 +425,7 @@ def track_order(order_number):
         flash('Order not found', 'danger')
         return redirect(url_for('index'))
 
-# Admin routes (unchanged)
+# Admin routes
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
