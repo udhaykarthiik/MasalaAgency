@@ -5,7 +5,8 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
-
+import os
+from flask import send_from_directory, abort
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -35,6 +36,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_agency = db.Column(db.Boolean, default=False)
     orders = db.relationship('Order', back_populates='customer', lazy=True)
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -71,6 +73,19 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Float)
     price = db.Column(db.Float)
+    
+@app.route('/static/images/<path:filename>')
+def serve_image(filename):
+    # Try to find the image in static/images folder
+    image_path = os.path.join(app.static_folder, 'images', filename)
+    
+    # If image exists, serve it
+    if os.path.exists(image_path):
+        return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
+    
+    # If not found, return a placeholder
+    return redirect(f"https://via.placeholder.com/300x200?text={filename.replace('.jpg','').replace('-','+')}")
+
 
 @login_manager.user_loader
 def load_user(user_id):
