@@ -139,13 +139,24 @@ def fix_image_urls():
     products = Product.query.all()
     fixed = []
     
+    # Map of product names to correct filenames
+    filename_map = {
+        "Everest Chicken Masala": "everest-chicken.jpg",
+        "MDH Chicken Masala": "mdh-chicken.jpg",
+        "Badshah Chicken Masala": "badshah-chicken.jpg",
+        "Shan Chicken Masala": "shan-chicken.jpg",
+        "Everest Garam Masala": "everest-garam.jpg",
+        "MDH Garam Masala": "mdh-garam.jpg",
+        "Badshah Garam Masala": "badshah-garam.jpg",
+        "Everest Meat Masala": "everest-meat.jpg",
+        "MDH Meat Masala": "mdh-meat.jpg",
+        "Everest Kitchen King": "everest-kitchen.jpg"
+    }
+    
     for p in products:
         old_url = p.image_url
-        # Extract filename from URL or create from name
-        if not p.image_url or 'placeholder' in p.image_url:
-            # Generate filename from product name
-            filename = p.name.lower().replace(' ', '-') + '.jpg'
-            p.image_url = f"/static/images/{filename}"
+        if p.name in filename_map:
+            p.image_url = f"/static/images/{filename_map[p.name]}"
             fixed.append({
                 'name': p.name,
                 'old': old_url,
