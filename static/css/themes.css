@@ -1,0 +1,255 @@
+/* =========================================
+   MASALA AGENCY - THEMES
+   5 complete themes with all required CSS variables
+   ========================================= */
+
+/* ── Sunset ──────────────────────────────── */
+.theme-sunset {
+    --primary:        #FF6B6B;
+    --primary-dark:   #cc4444;
+    --primary-light:  #ff9f9f;
+    --primary-gradient: linear-gradient(135deg, #FF6B6B, #FECA57);
+    --secondary:      #2d3436;
+    --accent:         #FF9FF3;
+    --bg-primary:     #1a0f0f;
+    --bg-secondary:   #231515;
+    --bg-tertiary:    #2e1c1c;
+    --bg-card:        #321e1e;
+    --bg-gradient:    radial-gradient(circle at 50% 50%, #2e1c1c, #1a0f0f);
+    --text-primary:   #ffffff;
+    --text-secondary: #fde8e8;
+    --text-muted:     #f0a0a0;
+    --border-light:   rgba(255, 107, 107, 0.2);
+    --border-medium:  rgba(255, 107, 107, 0.35);
+    --border-dark:    rgba(255, 107, 107, 0.5);
+    --shadow-glow:    0 0 30px rgba(255, 107, 107, 0.4);
+}
+
+/* Override purple-specific colours for sunset */
+.theme-sunset .navbar-brand,
+.theme-sunset .navbar {
+    border-bottom-color: rgba(255, 107, 107, 0.3) !important;
+}
+
+.theme-sunset .card {
+    border-color: rgba(255, 107, 107, 0.2) !important;
+}
+
+.theme-sunset .card:hover {
+    border-color: rgba(255, 107, 107, 0.5) !important;
+    box-shadow: 0 20px 30px rgba(255, 107, 107, 0.25) !important;
+}
+
+.theme-sunset .btn-primary {
+    background: linear-gradient(135deg, #FF6B6B, #cc4444) !important;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
+}
+
+.theme-sunset .price {
+    color: #FECA57 !important;
+}
+
+.theme-sunset .cursor-dot {
+    border-color: #FF6B6B !important;
+    box-shadow: 0 0 20px #FF6B6B, 0 0 40px rgba(255, 107, 107, 0.5) !important;
+}
+
+.theme-sunset .cursor-glow {
+    background: radial-gradient(circle, rgba(255,107,107,0.12) 0%, rgba(255,107,107,0.06) 40%, transparent 70%) !important;
+}
+
+/* ── Ocean ───────────────────────────────── */
+.theme-ocean {
+    --primary:          #48DBFB;
+    --primary-dark:     #0ABDE3;
+    --primary-light:    #74b9ff;
+    --primary-gradient: linear-gradient(135deg, #48DBFB, #0083b0);
+    --secondary:        #0d1b2a;
+    --accent:           #74b9ff;
+    --bg-primary:       #020c14;
+    --bg-secondary:     #071520;
+    --bg-tertiary:      #0c1e2e;
+    --bg-card:          #0f2336;
+    --bg-gradient:      radial-gradient(circle at 50% 50%, #0c1e2e, #020c14);
+    --text-primary:     #ffffff;
+    --text-secondary:   #c8f0fc;
+    --text-muted:       #74b9ff;
+    --border-light:     rgba(72, 219, 251, 0.2);
+    --border-medium:    rgba(72, 219, 251, 0.35);
+    --border-dark:      rgba(72, 219, 251, 0.5);
+    --shadow-glow:      0 0 30px rgba(72, 219, 251, 0.4);
+}
+
+.theme-ocean .card {
+    border-color: rgba(72, 219, 251, 0.2) !important;
+}
+
+.theme-ocean .card:hover {
+    border-color: rgba(72, 219, 251, 0.5) !important;
+    box-shadow: 0 20px 30px rgba(72, 219, 251, 0.2) !important;
+}
+
+.theme-ocean .btn-primary {
+    background: linear-gradient(135deg, #48DBFB, #0083b0) !important;
+    box-shadow: 0 4px 15px rgba(72, 219, 251, 0.4) !important;
+}
+
+.theme-ocean .price {
+    color: #48DBFB !important;
+}
+
+.theme-ocean .cursor-dot {
+    border-color: #48DBFB !important;
+    box-shadow: 0 0 20px #48DBFB, 0 0 40px rgba(72, 219, 251, 0.5) !important;
+}
+
+.theme-ocean .cursor-glow {
+    background: radial-gradient(circle, rgba(72,219,251,0.12) 0%, rgba(72,219,251,0.06) 40%, transparent 70%) !important;
+}
+
+/* ── Forest ──────────────────────────────── */
+.theme-forest {
+    --primary:          #1DD1A1;
+    --primary-dark:     #10AC84;
+    --primary-light:    #55efc4;
+    --primary-gradient: linear-gradient(135deg, #1DD1A1, #10AC84);
+    --secondary:        #0d1f18;
+    --accent:           #55efc4;
+    --bg-primary:       #020f09;
+    --bg-secondary:     #071811;
+    --bg-tertiary:      #0c2018;
+    --bg-card:          #0f2820;
+    --bg-gradient:      radial-gradient(circle at 50% 50%, #0c2018, #020f09);
+    --text-primary:     #ffffff;
+    --text-secondary:   #c8fced;
+    --text-muted:       #55efc4;
+    --border-light:     rgba(29, 209, 161, 0.2);
+    --border-medium:    rgba(29, 209, 161, 0.35);
+    --border-dark:      rgba(29, 209, 161, 0.5);
+    --shadow-glow:      0 0 30px rgba(29, 209, 161, 0.4);
+}
+
+.theme-forest .card {
+    border-color: rgba(29, 209, 161, 0.2) !important;
+}
+
+.theme-forest .card:hover {
+    border-color: rgba(29, 209, 161, 0.5) !important;
+    box-shadow: 0 20px 30px rgba(29, 209, 161, 0.2) !important;
+}
+
+.theme-forest .btn-primary {
+    background: linear-gradient(135deg, #1DD1A1, #10AC84) !important;
+    box-shadow: 0 4px 15px rgba(29, 209, 161, 0.4) !important;
+}
+
+.theme-forest .price {
+    color: #1DD1A1 !important;
+}
+
+.theme-forest .cursor-dot {
+    border-color: #1DD1A1 !important;
+    box-shadow: 0 0 20px #1DD1A1, 0 0 40px rgba(29, 209, 161, 0.5) !important;
+}
+
+.theme-forest .cursor-glow {
+    background: radial-gradient(circle, rgba(29,209,161,0.12) 0%, rgba(29,209,161,0.06) 40%, transparent 70%) !important;
+}
+
+/* ── Midnight ────────────────────────────── */
+.theme-midnight {
+    --primary:          #5F27CD;
+    --primary-dark:     #341F97;
+    --primary-light:    #F368E0;
+    --primary-gradient: linear-gradient(135deg, #5F27CD, #341F97);
+    --secondary:        #0d0820;
+    --accent:           #F368E0;
+    --bg-primary:       #03020f;
+    --bg-secondary:     #08061a;
+    --bg-tertiary:      #100c25;
+    --bg-card:          #150f2e;
+    --bg-gradient:      radial-gradient(circle at 50% 50%, #100c25, #03020f);
+    --text-primary:     #ffffff;
+    --text-secondary:   #d8ccff;
+    --text-muted:       #9b7ff4;
+    --border-light:     rgba(95, 39, 205, 0.2);
+    --border-medium:    rgba(95, 39, 205, 0.35);
+    --border-dark:      rgba(95, 39, 205, 0.5);
+    --shadow-glow:      0 0 30px rgba(95, 39, 205, 0.4);
+}
+
+.theme-midnight .card {
+    border-color: rgba(95, 39, 205, 0.2) !important;
+}
+
+.theme-midnight .card:hover {
+    border-color: rgba(95, 39, 205, 0.5) !important;
+    box-shadow: 0 20px 30px rgba(95, 39, 205, 0.25) !important;
+}
+
+.theme-midnight .btn-primary {
+    background: linear-gradient(135deg, #5F27CD, #341F97) !important;
+    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.4) !important;
+}
+
+.theme-midnight .price {
+    color: #F368E0 !important;
+}
+
+.theme-midnight .cursor-dot {
+    border-color: #5F27CD !important;
+    box-shadow: 0 0 20px #5F27CD, 0 0 40px rgba(95, 39, 205, 0.5) !important;
+}
+
+.theme-midnight .cursor-glow {
+    background: radial-gradient(circle, rgba(95,39,205,0.12) 0%, rgba(95,39,205,0.06) 40%, transparent 70%) !important;
+}
+
+/* ── Lavender ────────────────────────────── */
+.theme-lavender {
+    --primary:          #C56CF0;
+    --primary-dark:     #a044d4;
+    --primary-light:    #e0bbe4;
+    --primary-gradient: linear-gradient(135deg, #C56CF0, #a044d4);
+    --secondary:        #1a0f24;
+    --accent:           #FCC8F8;
+    --bg-primary:       #0e0314;
+    --bg-secondary:     #16071e;
+    --bg-tertiary:      #1e0e28;
+    --bg-card:          #241330;
+    --bg-gradient:      radial-gradient(circle at 50% 50%, #1e0e28, #0e0314);
+    --text-primary:     #ffffff;
+    --text-secondary:   #f0d8ff;
+    --text-muted:       #c99ee8;
+    --border-light:     rgba(197, 108, 240, 0.2);
+    --border-medium:    rgba(197, 108, 240, 0.35);
+    --border-dark:      rgba(197, 108, 240, 0.5);
+    --shadow-glow:      0 0 30px rgba(197, 108, 240, 0.4);
+}
+
+.theme-lavender .card {
+    border-color: rgba(197, 108, 240, 0.2) !important;
+}
+
+.theme-lavender .card:hover {
+    border-color: rgba(197, 108, 240, 0.5) !important;
+    box-shadow: 0 20px 30px rgba(197, 108, 240, 0.25) !important;
+}
+
+.theme-lavender .btn-primary {
+    background: linear-gradient(135deg, #C56CF0, #a044d4) !important;
+    box-shadow: 0 4px 15px rgba(197, 108, 240, 0.4) !important;
+}
+
+.theme-lavender .price {
+    color: #C56CF0 !important;
+}
+
+.theme-lavender .cursor-dot {
+    border-color: #C56CF0 !important;
+    box-shadow: 0 0 20px #C56CF0, 0 0 40px rgba(197, 108, 240, 0.5) !important;
+}
+
+.theme-lavender .cursor-glow {
+    background: radial-gradient(circle, rgba(197,108,240,0.12) 0%, rgba(197,108,240,0.06) 40%, transparent 70%) !important;
+}

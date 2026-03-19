@@ -4,52 +4,101 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="p-5 mb-4 bg-light rounded-3">
-            <div class="container-fluid py-5">
-                <h1 class="display-5 fw-bold">Welcome to Masala Agency</h1>
-                <p class="col-md-8 fs-4">Fresh and authentic masalas delivered to your shop. Register now to start ordering!</p>
-                {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Register as Shop Owner</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+<div class="hero-section">
+    <h1>
+        <span class="gradient-text">Welcome to</span><br>
+        <span class="display-1">Masala Agency</span>
+    </h1>
+    <p class="lead-text">
+        Fresh and authentic masalas delivered to your shop. 
+        <span class="highlight">Register now to start ordering!</span>
+    </p>
+    {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus"></i>
+            <span>Register as Shop Owner</span>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    {% endif %}
 </div>
 
 <!-- Products by Category -->
 {% for category, products in products_by_category.items() %}
-<div class="row mb-4">
+<div class="row mb-5">
     <div class="col-12">
-        <h2 class="mb-3">{{ category }}</h2>
-        <div class="row row-cols-1 row-cols-md-4 g-4">
+        <div class="section-header">
+            <h2>{{ category }}</h2>
+            <a href="{{ url_for('category_products', category_name=category) }}" 
+               class="view-all">
+                View all <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for product in products %}
             <div class="col">
-                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-decoration-none">
-                    <div class="card h-100 product-card">
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" 
+                   class="text-decoration-none">
+                    <div class="card product-card h-100">
+                        {% if product.original_price and product.original_price > product.price %}
+                            <div class="badge">Sale</div>
+                        {% endif %}
+                        
+                        {% if product.stock > 0 %}
+                            <div class="stock-badge">
+                                <i class="fas fa-check-circle me-1"></i>In Stock
+                            </div>
                         {% else %}
-                            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                                No Image
+                            <div class="stock-badge out-of-stock">
+                                <i class="fas fa-times-circle me-1"></i>Out of Stock
                             </div>
                         {% endif %}
+                        
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" 
+                                 class="card-img-top" 
+                                 alt="{{ product.name }}">
+                        {% else %}
+                            <div class="card-img-top d-flex align-items-center 
+                                        justify-content-center"
+                                 style="background: #111318;">
+                                <i class="fas fa-image fa-3x" 
+                                   style="color: rgba(192,132,252,0.4);"></i>
+                            </div>
+                        {% endif %}
+                        
                         <div class="card-body">
-                            <h5 class="card-title text-dark">{{ product.name }}</h5>
-                            <p class="card-text text-muted">{{ product.description[:50] }}...</p>
+                            <!-- FIX: explicit white color so Bootstrap dark override can't win -->
+                            <h5 class="card-title" 
+                                style="color: #ffffff !important; 
+                                       font-weight: 700; 
+                                       font-size: 1.1rem;
+                                       line-height: 1.3;
+                                       margin-bottom: 0.5rem;
+                                       text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
+                                {{ product.name }}
+                            </h5>
+                            <p class="card-text">{{ product.description[:60] }}...</p>
+                            
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <span class="h5 mb-0 text-dark">₹{{ product.price }}</span>
+                                    <span class="price">₹{{ product.price }}</span>
                                     {% if product.original_price and product.original_price > product.price %}
-                                        <small class="text-muted text-decoration-line-through">₹{{ product.original_price }}</small>
+                                        <small class="original-price">
+                                            ₹{{ product.original_price }}
+                                        </small>
                                     {% endif %}
-                                    <small class="d-block text-muted">{{ product.unit }}</small>
+                                    <small class="unit">{{ product.unit }}</small>
                                 </div>
+                                
                                 {% if current_user.is_authenticated %}
-                                    <span class="btn btn-sm btn-primary">Order</span>
+                                    <span class="btn btn-primary btn-sm">
+                                        <i class="fas fa-shopping-cart me-1"></i>Order
+                                    </span>
                                 {% else %}
-                                    <span class="btn btn-sm btn-outline-primary">View</span>
+                                    <span class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </span>
                                 {% endif %}
                             </div>
                         </div>
@@ -58,24 +107,50 @@
             </div>
             {% endfor %}
         </div>
-        <div class="text-end mt-2">
-            <a href="{{ url_for('category_products', category_name=category) }}" class="btn btn-link">View all {{ category }} →</a>
-        </div>
     </div>
 </div>
 {% endfor %}
 
-<!-- All Products Section (Small cards at bottom) -->
+<!-- Quick View All Products -->
+{% if products %}
 <div class="row mt-5">
     <div class="col-12">
-        <h2 class="mb-3">All Products</h2>
-        <div class="row row-cols-1 row-cols-md-6 g-3">
+        <div class="section-header">
+            <h2>All Products</h2>
+        </div>
+        
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
             {% for product in products[:6] %}
             <div class="col">
-                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-decoration-none">
-                    <div class="card h-100 text-center p-2">
-                        <small class="text-dark">{{ product.name }}</small>
-                        <strong class="text-primary">₹{{ product.price }}</strong>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" 
+                   class="text-decoration-none">
+                    <div class="card h-100 text-center p-3">
+                        <div class="mb-2">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" 
+                                     alt="{{ product.name }}"
+                                     style="height: 60px; width: 60px; 
+                                            object-fit: cover; border-radius: 50%;
+                                            border: 2px solid rgba(147,51,234,0.3);">
+                            {% else %}
+                                <i class="fas fa-box fa-2x" 
+                                   style="color: rgba(192,132,252,0.6);"></i>
+                            {% endif %}
+                        </div>
+
+                        <!-- FIX: was `text-dark fw-bold` which made name black = invisible -->
+                        <small style="color: #ffffff !important; 
+                                      font-weight: 700;
+                                      display: block;
+                                      margin-bottom: 0.25rem;
+                                      line-height: 1.3;
+                                      text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                            {{ product.name[:20] }}
+                        </small>
+
+                        <strong style="color: #c084fc !important; font-size: 0.95rem;">
+                            ₹{{ product.price }}
+                        </strong>
                     </div>
                 </a>
             </div>
@@ -83,4 +158,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

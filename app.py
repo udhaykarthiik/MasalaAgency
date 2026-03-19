@@ -10,6 +10,7 @@ from werkzeug.utils import safe_join
 import sys
 import logging
 import time
+from sqlalchemy import text
 
 # Set up detailed logging
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)

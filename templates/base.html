@@ -3,53 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masala Agency - {% block title %}Home{% endblock %}</title>
+    <title>Masala Agency - {% block title %}Premium Masalas{% endblock %}</title>
+    
+    <!-- Google Fonts - Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    
+    <!-- Additional CSS per page -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Animated Background Elements -->
+    <div class="animated-bg">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <!-- Custom Cursor Elements (will be populated by JS) -->
+    <div class="cursor-glow"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-trail"></div>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Masala Agency</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="{{ url_for('index') }}" data-aos="fade-right" data-aos-duration="800">
+                <i class="fas fa-pepper-hot"></i>
+                <span>Masala Agency</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- In the navbar ul.ms-auto section -->
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="100">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" 
+                           href="{{ url_for('index') }}">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
                     </li>
+                    
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('profile') }}">My Orders</a>
-                        </li>
-                        {% if current_user.is_agency %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                                Admin
+                        <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="150">
+                            <a class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}" 
+                               href="{{ url_for('profile') }}">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span>My Orders</span>
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('admin_products') }}">Products</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('admin_orders') }}">Orders</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('admin_customers') }}">Customers</a></li>
+                        </li>
+                        
+                        {% if current_user.is_agency %}
+                        <li class="nav-item dropdown" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" 
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-crown"></i>
+                                <span>Admin</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end animate-dropdown" aria-labelledby="adminDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_products') }}">
+                                        <i class="fas fa-box"></i>
+                                        <span>Products</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_orders') }}">
+                                        <i class="fas fa-truck"></i>
+                                        <span>Orders</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_customers') }}">
+                                        <i class="fas fa-users"></i>
+                                        <span>Customers</span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         {% endif %}
-                        <li class="nav-item">
-                            <span class="nav-link text-light">{{ current_user.shop_name }}</span>
+                        
+                        <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="250">
+                            <span class="nav-link user-welcome">
+                                <i class="fas fa-store"></i>
+                                <span>{{ current_user.shop_name }}</span>
+                            </span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        
+                        <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="300">
+                            <a class="nav-link logout-btn" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
                         </li>
+                        
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="100">
+                            <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" 
+                               href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                        <li class="nav-item" data-aos="fade-left" data-aos-duration="800" data-aos-delay="150">
+                            <a class="nav-link {% if request.endpoint == 'register' %}active{% endif %}" 
+                               href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Register</span>
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -57,33 +141,125 @@
         </div>
     </nav>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages with Animation -->
     <div class="container mt-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }} 
+                                alert-dismissible fade show animate__animated animate__slideInDown" 
+                         role="alert"
+                         data-aos="fade-down"
+                         data-aos-duration="500">
+                        <div class="alert-content">
+                            <i class="fas fa-{% if category == 'success' %}check-circle
+                                       {% elif category == 'danger' %}exclamation-circle
+                                       {% elif category == 'warning' %}exclamation-triangle
+                                       {% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" 
+                                aria-label="Close"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content with Fade Animation -->
     <main class="container my-4">
-        {% block content %}{% endblock %}
+        <div class="content-wrapper" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-light text-center py-3 mt-5">
+    <!-- Footer with Glow Effect -->
+    <footer class="footer">
         <div class="container">
-            <p class="mb-0">&copy; 2026 Masala Agency. All rights reserved.</p>
+            <div class="footer-content">
+                <div class="footer-brand" data-aos="fade-up" data-aos-duration="800">
+                    <i class="fas fa-pepper-hot"></i>
+                    <span>Masala Agency</span>
+                </div>
+                <p class="copyright" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                    &copy; 2026 Masala Agency. All rights reserved.
+                </p>
+                <div class="social-links" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Theme Manager JS (must load before main.js) -->
+    <script src="{{ url_for('static', filename='js/theme-manager.js') }}"></script>
+    
+    <!-- Main JS with custom animations -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Initialize Animations -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            mirror: false,
+            duration: 800,
+            easing: 'ease-in-out'
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Add hover effect to cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple-effect';
+                ripple.style.left = e.offsetX + 'px';
+                ripple.style.top = e.offsetY + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 1000);
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Page transition effect
+        window.addEventListener('beforeunload', function() {
+            document.body.classList.add('page-transition');
+        });
+    </script>
+    
+    <!-- Additional JS per page -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

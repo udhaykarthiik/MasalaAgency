@@ -1,0 +1,319 @@
+<!-- Theme Selector Component -->
+{% if not current_user.is_authenticated or not current_user.is_agency %}
+<div class="theme-selector-container">
+    <button class="theme-floating-btn" id="themeToggleBtn" aria-label="Change theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" 
+                  fill="currentColor"/>
+            <circle cx="12" cy="12" r="3" fill="white"/>
+        </svg>
+    </button>
+    
+    <div class="theme-panel" id="themePanel">
+        <div class="theme-panel-header">
+            <h3>Choose Your Theme</h3>
+            <button class="close-panel" id="closeThemePanel">&times;</button>
+        </div>
+        <div class="theme-grid">
+            <!-- Sunset -->
+            <div class="theme-card" data-theme="sunset">
+                <div class="theme-preview sunset">
+                    <span class="color-dot" style="background: #FF6B6B"></span>
+                    <span class="color-dot" style="background: #FECA57"></span>
+                    <span class="color-dot" style="background: #FF9FF3"></span>
+                </div>
+                <span class="theme-name">Sunset</span>
+                <div class="theme-check"></div>
+            </div>
+            
+            <!-- Ocean -->
+            <div class="theme-card" data-theme="ocean">
+                <div class="theme-preview ocean">
+                    <span class="color-dot" style="background: #48DBFB"></span>
+                    <span class="color-dot" style="background: #0ABDE3"></span>
+                    <span class="color-dot" style="background: #74b9ff"></span>
+                </div>
+                <span class="theme-name">Ocean</span>
+                <div class="theme-check"></div>
+            </div>
+            
+            <!-- Forest -->
+            <div class="theme-card" data-theme="forest">
+                <div class="theme-preview forest">
+                    <span class="color-dot" style="background: #1DD1A1"></span>
+                    <span class="color-dot" style="background: #10AC84"></span>
+                    <span class="color-dot" style="background: #55efc4"></span>
+                </div>
+                <span class="theme-name">Forest</span>
+                <div class="theme-check"></div>
+            </div>
+            
+            <!-- Midnight -->
+            <div class="theme-card" data-theme="midnight">
+                <div class="theme-preview midnight">
+                    <span class="color-dot" style="background: #5F27CD"></span>
+                    <span class="color-dot" style="background: #341F97"></span>
+                    <span class="color-dot" style="background: #F368E0"></span>
+                </div>
+                <span class="theme-name">Midnight</span>
+                <div class="theme-check"></div>
+            </div>
+            
+            <!-- Lavender -->
+            <div class="theme-card" data-theme="lavender">
+                <div class="theme-preview lavender">
+                    <span class="color-dot" style="background: #C56CF0"></span>
+                    <span class="color-dot" style="background: #FCC8F8"></span>
+                    <span class="color-dot" style="background: #e0bbe4"></span>
+                </div>
+                <span class="theme-name">Lavender</span>
+                <div class="theme-check"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.theme-floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-floating-btn:hover {
+    transform: scale(1.1) rotate(30deg);
+    box-shadow: 0 6px 25px var(--shadow);
+}
+
+.theme-floating-btn svg {
+    width: 30px;
+    height: 30px;
+    animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.theme-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 320px;
+    background: var(--surface);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transform: scale(0);
+    opacity: 0;
+    transform-origin: bottom right;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    border: 1px solid var(--border);
+}
+
+.theme-panel.visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.theme-panel-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-panel-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.close-panel {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.close-panel:hover {
+    color: var(--danger);
+}
+
+.theme-grid {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.theme-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px var(--shadow);
+}
+
+.theme-card.active {
+    border-color: var(--primary);
+}
+
+.theme-preview {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--bg-gradient);
+    min-height: 60px;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.theme-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.theme-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--success);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.theme-card.active .theme-check {
+    opacity: 1;
+}
+
+.theme-card.active .theme-check::after {
+    content: '✓';
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .theme-floating-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .theme-panel {
+        bottom: 80px;
+        right: 20px;
+        width: 280px;
+    }
+    
+    .theme-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const themePanel = document.getElementById('themePanel');
+    const closePanel = document.getElementById('closeThemePanel');
+    
+    themeToggle.addEventListener('click', () => {
+        themePanel.classList.toggle('visible');
+    });
+    
+    closePanel.addEventListener('click', () => {
+        themePanel.classList.remove('visible');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!themePanel.contains(e.target) && !themeToggle.contains(e.target)) {
+            themePanel.classList.remove('visible');
+        }
+    });
+    
+    // Theme switching logic
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const theme = this.dataset.theme;
+            document.body.className = document.body.className
+                .replace(/theme-\w+/g, '')
+                .trim();
+            document.body.classList.add(`theme-${theme}`);
+            
+            // Update active state
+            document.querySelectorAll('.theme-card').forEach(c => 
+                c.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('preferred-theme', theme);
+            
+            // Close panel after selection
+            setTimeout(() => {
+                themePanel.classList.remove('visible');
+            }, 300);
+        });
+    });
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem('preferred-theme');
+    if (savedTheme) {
+        document.body.classList.add(`theme-${savedTheme}`);
+        document.querySelector(`.theme-card[data-theme="${savedTheme}"]`)
+            ?.classList.add('active');
+    } else {
+        // Default to sunset
+        document.body.classList.add('theme-sunset');
+        document.querySelector('.theme-card[data-theme="sunset"]')
+            ?.classList.add('active');
+    }
+});
+</script>
+{% endif %}
