@@ -1,4 +1,3 @@
-# app.py - Complete Masala Agency Application with Normal Login
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -6,7 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 import mimetypes
-from flask import send_from_directory, abort, send_file, safe_join
+from flask import send_from_directory, abort, send_file
+from werkzeug.utils import safe_join
+
 
 # Initialize Flask app
 app = Flask(__name__)
