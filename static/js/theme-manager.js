@@ -1,140 +1,91 @@
 /**
- * Cursor Manager - Premium Edition
- * Custom cursor effects only — theme selector removed.
+ * Theme Manager - Cursor Only Version (No Palette)
+ * Just the cursor effects, no theme selector
  */
 
 class ThemeManager {
     constructor() {
-        this.init();
-    }
-
-    init() {
         this.initCursorEffects();
     }
 
     initCursorEffects() {
-        // Custom cursor only on desktop
+        // Only on desktop
         if (window.innerWidth <= 768) return;
+        
+        // Remove any existing cursor elements first
+        const existingCursors = document.querySelectorAll('.cursor-dot, .cursor-glow, .cursor-trail, .cursor-trail-2');
+        existingCursors.forEach(el => el.remove());
+        
+        // Create cursor elements
+        this.createCursorElements();
+        
+        // Track mouse
+        this.setupMouseTracking();
+        
+        console.log('✅ Cursor initialized');
+    }
 
-        // Clean up any stale cursor elements from previous init
-        document.querySelectorAll(
-            '.cursor-dot, .cursor-glow, .cursor-trail, .cursor-trail-2'
-        ).forEach(el => el.remove());
+    createCursorElements() {
+        // Dot cursor
+        const dot = document.createElement('div');
+        dot.className = 'cursor-dot';
+        dot.style.cssText = `
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid #9333ea;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px #9333ea;
+            transition: width 0.2s, height 0.2s;
+        `;
+        document.body.appendChild(dot);
+        this.dot = dot;
 
-        // ── Create cursor elements ──────────────────────────────────────────
-        const cursorGlow = document.createElement('div');
-        cursorGlow.className = 'cursor-glow';
+        // Glow effect
+        const glow = document.createElement('div');
+        glow.className = 'cursor-glow';
+        glow.style.cssText = `
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(147,51,234,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            filter: blur(40px);
+        `;
+        document.body.appendChild(glow);
+        this.glow = glow;
+    }
 
-        const cursorDot = document.createElement('div');
-        cursorDot.className = 'cursor-dot';
-
-        const trail2 = document.createElement('div');
-        trail2.className = 'cursor-trail-2';
-
-        // Three shrinking trail dots
-        const trails = Array.from({ length: 3 }, (_, i) => {
-            const t = document.createElement('div');
-            t.className = 'cursor-trail';
-            const size = 10 - i * 2; // 10px → 8px → 6px
-            t.style.cssText = `
-                width: ${size}px;
-                height: ${size}px;
-                opacity: ${0.6 - i * 0.15};
-                z-index: ${2147483645 - i};
-            `;
-            return t;
-        });
-
-        // Append in z-order (glow lowest, dot highest)
-        [cursorGlow, trail2, ...trails, cursorDot].forEach(el =>
-            document.body.appendChild(el)
-        );
-
-        // ── State ───────────────────────────────────────────────────────────
-        let mouseX = 0;
-        let mouseY = 0;
-
-        // Ring buffer for trail lag effect
-        const TRAIL_DELAYS = [4, 8, 12];
-        const TRAIL2_DELAY = 10;
-        const BUFFER_SIZE  = 20;
-        const posBuffer    = Array.from({ length: BUFFER_SIZE }, () => ({ x: 0, y: 0 }));
-        let   bufferIndex  = 0;
-
-        // ── Mouse tracking ──────────────────────────────────────────────────
+    setupMouseTracking() {
+        let mouseX = 0, mouseY = 0;
+        
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
 
-        // ── rAF animation loop ──────────────────────────────────────────────
-        const tick = () => {
-            posBuffer[bufferIndex] = { x: mouseX, y: mouseY };
-            bufferIndex = (bufferIndex + 1) % BUFFER_SIZE;
-
-            // Position via left/top — CSS transform: translate(-50%,-50%) centres the dot
-            cursorDot.style.left  = mouseX + 'px';
-            cursorDot.style.top   = mouseY + 'px';
-
-            cursorGlow.style.left = mouseX + 'px';
-            cursorGlow.style.top  = mouseY + 'px';
-
-            trails.forEach((trail, i) => {
-                const idx = (bufferIndex - TRAIL_DELAYS[i] + BUFFER_SIZE) % BUFFER_SIZE;
-                const pos = posBuffer[idx];
-                trail.style.left = pos.x + 'px';
-                trail.style.top  = pos.y + 'px';
-            });
-
-            const t2idx = (bufferIndex - TRAIL2_DELAY + BUFFER_SIZE) % BUFFER_SIZE;
-            trail2.style.left = posBuffer[t2idx].x + 'px';
-            trail2.style.top  = posBuffer[t2idx].y + 'px';
-
-            requestAnimationFrame(tick);
+        const updateCursor = () => {
+            if (this.dot && this.glow) {
+                this.dot.style.left = mouseX + 'px';
+                this.dot.style.top = mouseY + 'px';
+                this.glow.style.left = mouseX + 'px';
+                this.glow.style.top = mouseY + 'px';
+            }
+            requestAnimationFrame(updateCursor);
         };
-
-        requestAnimationFrame(tick);
-
-        // ── Hover effects via event delegation ─────────────────────────────
-        const INTERACTIVE = 'a, button, .card, .btn, .nav-link, .product-card, input, select, textarea, label';
-
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest(INTERACTIVE)) {
-                cursorDot.classList.add('hover');
-                cursorGlow.classList.add('hover');
-            }
-        });
-
-        document.addEventListener('mouseout', (e) => {
-            if (e.target.closest(INTERACTIVE)) {
-                cursorDot.classList.remove('hover');
-                cursorGlow.classList.remove('hover');
-            }
-        });
-
-        // ── Click burst ─────────────────────────────────────────────────────
-        document.addEventListener('mousedown', () => {
-            cursorDot.classList.add('click');
-        });
-
-        document.addEventListener('mouseup', () => {
-            setTimeout(() => cursorDot.classList.remove('click'), 300);
-        });
-
-        // ── Handle window resize ────────────────────────────────────────────
-        window.addEventListener('resize', () => {
-            const hide = window.innerWidth <= 768;
-            [cursorGlow, cursorDot, trail2, ...trails].forEach(el => {
-                el.style.display = hide ? 'none' : '';
-            });
-            document.body.style.cursor = hide ? '' : 'none';
-        });
-
-        console.log('✅ Cursor initialised');
+        
+        updateCursor();
     }
 }
 
-// Initialise when DOM is ready
+// Initialize
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         window.themeManager = new ThemeManager();

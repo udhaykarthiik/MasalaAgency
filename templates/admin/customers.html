@@ -3,51 +3,72 @@
 {% block title %}Customers{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h1>Shop Owners</h1>
-        <p class="text-muted">All registered shop owners</p>
-    </div>
+
+<div class="admin-page-header">
+    <h1><i class="fas fa-users me-2" style="color:#c084fc;"></i>Shop Owners</h1>
+    <p>All registered shop owners</p>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Shop Name</th>
-                                <th>Owner</th>
-                                <th>Phone</th>
-                                <th>Address</th>
-                                <th>Registered</th>
-                                <th>Total Orders</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for customer in customers %}
-                            <tr>
-                                <td>{{ customer.id }}</td>
-                                <td>{{ customer.shop_name }}</td>
-                                <td>{{ customer.owner_name or '-' }}</td>
-                                <td>{{ customer.phone }}</td>
-                                <td>{{ customer.address or '-' }}</td>
-                                <td>{{ customer.created_at.strftime('%d-%m-%Y') }}</td>
-                                <td>{{ customer.orders|length }}</td>
-                                <td>
-                                    <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" class="btn btn-sm btn-info">View Orders</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-store me-2"></i>Customer List
+            <span style="color:rgba(255,255,255,0.4); font-size:0.85rem; font-weight:400; margin-left:0.5rem;">
+                ({{ customers|length }} total)
+            </span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Shop Name</th>
+                        <th>Owner</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Registered</th>
+                        <th>Orders</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td style="color:rgba(255,255,255,0.4);">{{ customer.id }}</td>
+                        <td><strong style="color:#ffffff;">{{ customer.shop_name }}</strong></td>
+                        <td>{{ customer.owner_name or '—' }}</td>
+                        <td>
+                            <span style="color:#c084fc;">
+                                <i class="fas fa-phone me-1" style="font-size:0.75rem;"></i>
+                                {{ customer.phone }}
+                            </span>
+                        </td>
+                        <td style="color:rgba(255,255,255,0.6);">{{ customer.address or '—' }}</td>
+                        <td>{{ customer.created_at.strftime('%d-%m-%Y') }}</td>
+                        <td>
+                            <span style="background:rgba(147,51,234,0.15);
+                                         color:#c084fc;
+                                         padding:0.2rem 0.65rem;
+                                         border-radius:20px;
+                                         font-size:0.82rem;
+                                         border:1px solid rgba(147,51,234,0.3);
+                                         font-weight:600;">
+                                {{ customer.orders|length }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}"
+                               class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> View Orders
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
 {% endblock %}

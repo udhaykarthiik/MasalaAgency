@@ -135,6 +135,24 @@ p, span {
         cursor: none !important;
     }
 
+    /* Restore real cursor on navbar and ALL its children so
+       dropdown items, links, and buttons are always clickable */
+    .navbar,
+    .navbar *,
+    .dropdown-menu,
+    .dropdown-menu * {
+        cursor: auto !important;
+    }
+
+    /* Interactive elements inside navbar keep pointer */
+    .navbar a,
+    .navbar button,
+    .navbar .nav-link,
+    .navbar .dropdown-toggle,
+    .dropdown-menu .dropdown-item {
+        cursor: pointer !important;
+    }
+
     /*
      * KEY FIX: Use left/top for positioning instead of transform translate(x,y).
      * The JS sets style.left and style.top directly so the element's top-left
@@ -155,10 +173,12 @@ p, span {
         background: white;
         border: 3px solid #9333ea;
         border-radius: 50%;
-        pointer-events: none;
-        z-index: 2147483647; /* max z-index */
+        pointer-events: none !important;
+        /* FIX: was 2147483647 (max) which rendered ABOVE Bootstrap dropdowns (z:1000),
+           modals (z:1055), and tooltips (z:1080). Dropped to 999 so all Bootstrap
+           overlays always appear on top and remain clickable. */
+        z-index: 999;
         transform: translate(-50%, -50%);
-        /* No transition on transform — instant snap to pointer */
         box-shadow:
             0 0 0 2px rgba(255, 255, 255, 0.4),
             0 0 20px #9333ea,
@@ -195,7 +215,7 @@ p, span {
         z-index: -1;
     }
 
-    /* Soft ambient glow - fixed mix-blend-mode removed */
+    /* Soft ambient glow */
     .cursor-glow {
         position: fixed;
         top: 0;
@@ -209,12 +229,10 @@ p, span {
             transparent 70%
         );
         border-radius: 50%;
-        pointer-events: none;
-        z-index: 2147483640;
+        pointer-events: none !important;
+        z-index: 997; /* below cursor-dot, well below Bootstrap dropdowns */
         transform: translate(-50%, -50%);
-        /* Slightly delayed follow for smooth lag effect */
         transition: left 0.08s ease, top 0.08s ease;
-        /* NO mix-blend-mode — it made the glow black on dark backgrounds */
         will-change: left, top;
     }
 
@@ -227,8 +245,8 @@ p, span {
         height: 10px;
         background: rgba(192, 132, 252, 0.5);
         border-radius: 50%;
-        pointer-events: none;
-        z-index: 2147483645;
+        pointer-events: none !important;
+        z-index: 996; /* below all cursor elements and Bootstrap overlays */
         transform: translate(-50%, -50%);
         filter: blur(2px);
         will-change: left, top;
@@ -243,8 +261,8 @@ p, span {
         height: 22px;
         background: rgba(147, 51, 234, 0.2);
         border-radius: 50%;
-        pointer-events: none;
-        z-index: 2147483644;
+        pointer-events: none !important;
+        z-index: 995; /* lowest cursor layer */
         transform: translate(-50%, -50%);
         filter: blur(6px);
         will-change: left, top;
@@ -749,5 +767,494 @@ footer i {
 
     .card-img-top {
         height: 180px;
+    }
+}
+
+/* =========================================
+   NAVBAR DROPDOWN — Dark theme fix
+   Bootstrap dropdown is white by default
+   ========================================= */
+
+.dropdown-menu {
+    background: #1a1c23 !important;
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    border-radius: 14px !important;
+    padding: 0.5rem !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(147, 51, 234, 0.15) !important;
+    min-width: 200px;
+}
+
+.dropdown-menu .dropdown-item {
+    color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+    background: transparent !important;
+}
+
+.dropdown-menu .dropdown-item i {
+    color: #c084fc !important;
+    width: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.dropdown-menu .dropdown-item span {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus,
+.dropdown-menu .dropdown-item:active {
+    background: rgba(147, 51, 234, 0.2) !important;
+    color: #ffffff !important;
+}
+
+.dropdown-menu .dropdown-item:hover i,
+.dropdown-menu .dropdown-item:focus i {
+    color: #ffffff !important;
+}
+
+.dropdown-menu .dropdown-item:hover span,
+.dropdown-menu .dropdown-item:focus span {
+    color: #ffffff !important;
+}
+
+.dropdown-menu .dropdown-divider {
+    border-color: rgba(147, 51, 234, 0.2) !important;
+    margin: 0.3rem 0 !important;
+}
+
+/* Notification badge inside navbar */
+.navbar .badge {
+    background: #ef4444 !important;
+    color: white !important;
+    font-size: 0.65rem !important;
+    padding: 0.2em 0.45em !important;
+    border-radius: 20px !important;
+    border: none !important;
+}
+
+/* Dropdown toggle caret */
+.navbar .dropdown-toggle::after {
+    border-top-color: #c084fc !important;
+    opacity: 0.8;
+}
+
+/* Animate dropdown open */
+.dropdown-menu.show {
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   ADMIN — CARD HEADERS
+   Replace all Bootstrap bg-* card headers
+   ========================================= */
+
+.card-header {
+    background: #111318 !important;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.3) !important;
+    padding: 1rem 1.5rem !important;
+}
+
+.card-header h4,
+.card-header h5,
+.card-header h6 {
+    color: #c084fc !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+/* =========================================
+   ADMIN — STAT CARDS (dashboard)
+   Override Bootstrap bg-primary/success/info/warning
+   ========================================= */
+
+.stat-card {
+    background: #1e2028 !important;
+    border: 1px solid rgba(147, 51, 234, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+}
+
+.stat-card.stat-purple::before { background: linear-gradient(90deg, #9333ea, #c084fc); }
+.stat-card.stat-green::before  { background: linear-gradient(90deg, #10b981, #34d399); }
+.stat-card.stat-blue::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.stat-card.stat-amber::before  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(147, 51, 234, 0.5);
+    box-shadow: 0 12px 30px rgba(147, 51, 234, 0.2);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card.stat-purple .stat-icon { background: rgba(147, 51, 234, 0.2); color: #c084fc !important; }
+.stat-card.stat-green .stat-icon  { background: rgba(16, 185, 129, 0.2); color: #34d399 !important; }
+.stat-card.stat-blue .stat-icon   { background: rgba(59, 130, 246, 0.2);  color: #60a5fa !important; }
+.stat-card.stat-amber .stat-icon  { background: rgba(245, 158, 11, 0.2);  color: #fbbf24 !important; }
+
+.stat-card .stat-label {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-value {
+    color: #ffffff !important;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    display: block;
+}
+
+/* =========================================
+   ADMIN — FORMS
+   Dark-themed inputs, selects, textareas
+   ========================================= */
+
+.form-label {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
+}
+
+.form-control,
+.form-select {
+    background: #111318 !important;
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    padding: 0.65rem 1rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: #1a1c23 !important;
+    border-color: #9333ea !important;
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2) !important;
+    color: #ffffff !important;
+    outline: none !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Select options need explicit dark bg for browser chrome */
+.form-select option,
+.form-control option {
+    background: #1e2028 !important;
+    color: #ffffff !important;
+}
+
+.form-text {
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-size: 0.8rem !important;
+    margin-top: 0.3rem !important;
+}
+
+/* File input */
+.form-control[type="file"] {
+    padding: 0.5rem 1rem !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.form-control[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #9333ea, #7e22ce);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    margin-right: 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.form-control[type="file"]::file-selector-button:hover {
+    background: linear-gradient(135deg, #7e22ce, #6b21a5);
+}
+
+/* Image thumbnail in edit forms */
+.img-thumbnail {
+    background: #111318 !important;
+    border: 2px solid rgba(147, 51, 234, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 4px !important;
+}
+
+/* =========================================
+   ADMIN — TABLES
+   Dark striped tables with purple accents
+   ========================================= */
+
+/* Override Bootstrap table-striped white rows */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(147, 51, 234, 0.06) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.table > thead > tr > th {
+    background: #111318 !important;
+    color: #c084fc !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.3) !important;
+    white-space: nowrap;
+}
+
+.table > tbody > tr > td {
+    color: rgba(255, 255, 255, 0.9) !important;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.08) !important;
+    padding: 0.85rem 1rem !important;
+    vertical-align: middle !important;
+}
+
+.table > tbody > tr:hover > td {
+    background: rgba(147, 51, 234, 0.1) !important;
+}
+
+/* Small text inside table cells (e.g. phone under shop name) */
+.table td small {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.78rem !important;
+}
+
+/* Inline form select inside table (orders page) */
+.table .form-select-sm {
+    background: #111318 !important;
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-size: 0.82rem !important;
+    padding: 0.3rem 0.6rem !important;
+    min-width: 120px;
+}
+
+.table .form-select-sm:focus {
+    border-color: #9333ea !important;
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2) !important;
+}
+
+/* =========================================
+   ADMIN — BADGES
+   Status badges that match the dark theme
+   ========================================= */
+
+.badge {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 0.35em 0.75em !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.03em;
+}
+
+/* Override Bootstrap badge colors */
+.badge.bg-warning  { background: rgba(245, 158, 11, 0.2)  !important; color: #fbbf24 !important; border: 1px solid rgba(245,158,11,0.4); }
+.badge.bg-success  { background: rgba(16, 185, 129, 0.2)  !important; color: #34d399 !important; border: 1px solid rgba(16,185,129,0.4); }
+.badge.bg-info     { background: rgba(59, 130, 246, 0.2)  !important; color: #60a5fa !important; border: 1px solid rgba(59,130,246,0.4); }
+.badge.bg-primary  { background: rgba(147, 51, 234, 0.2)  !important; color: #c084fc !important; border: 1px solid rgba(147,51,234,0.4); }
+.badge.bg-danger   { background: rgba(239, 68, 68, 0.2)   !important; color: #f87171 !important; border: 1px solid rgba(239,68,68,0.4); }
+
+/* =========================================
+   ADMIN — BUTTONS (extra variants)
+   ========================================= */
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 30px !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.9rem !important;
+    font-size: 0.82rem !important;
+    border-radius: 20px !important;
+    gap: 0.4rem !important;
+}
+
+/* =========================================
+   ADMIN — PAGE HEADERS
+   ========================================= */
+
+.admin-page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.admin-page-header h1 {
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.admin-page-header p {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+}
+
+/* =========================================
+   ADMIN — QUICK ACTIONS
+   ========================================= */
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* =========================================
+   ADMIN — text-muted override (global)
+   Bootstrap sets this to #6c757d = invisible on dark
+   ========================================= */
+
+.text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.text-success { color: #34d399 !important; }
+.text-danger  { color: #f87171 !important; }
+.text-warning { color: #fbbf24 !important; }
+.text-info    { color: #60a5fa !important; }
+
+/* =========================================
+   ADMIN — RESPONSIVE TABLES
+   ========================================= */
+
+@media (max-width: 768px) {
+    .table > thead > tr > th,
+    .table > tbody > tr > td {
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.5rem !important;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+    }
+
+    .quick-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 }

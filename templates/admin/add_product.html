@@ -3,38 +3,56 @@
 {% block title %}Add Product{% endblock %}
 
 {% block content %}
+
+<div class="admin-page-header">
+    <h1><i class="fas fa-plus-circle me-2" style="color:#c084fc;"></i>Add New Product</h1>
+    <p>Fill in the details to add a new product to your catalogue</p>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Add New Product</h4>
+            <div class="card-header">
+                <h5><i class="fas fa-box me-2"></i>Product Details</h5>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="name" class="form-label">Product Name *</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   placeholder="e.g., Chicken Masala" required>
                         </div>
                         <div class="col-md-6">
                             <label for="category" class="form-label">Category *</label>
-                            <input type="text" class="form-control" id="category" name="category" 
+                            <input type="text" class="form-control" id="category" name="category"
                                    placeholder="e.g., Chicken Masala" required>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="price" class="form-label">Price (₹) *</label>
-                            <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                            <input type="number" step="0.01" class="form-control"
+                                   id="price" name="price" placeholder="0.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="original_price" class="form-label">Original Price (₹)</label>
+                            <input type="number" step="0.01" class="form-control"
+                                   id="original_price" name="original_price" placeholder="Optional">
                         </div>
                         <div class="col-md-4">
                             <label for="stock" class="form-label">Stock *</label>
-                            <input type="number" class="form-control" id="stock" name="stock" value="0" required>
+                            <input type="number" class="form-control"
+                                   id="stock" name="stock" value="0" required>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label for="unit" class="form-label">Unit *</label>
-                            <select class="form-control" id="unit" name="unit" required>
+                            <select class="form-select" id="unit" name="unit" required>
                                 <option value="kg">kg</option>
                                 <option value="g">g</option>
                                 <option value="piece">piece</option>
@@ -42,24 +60,61 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <textarea class="form-control" id="description" name="description"
+                                  rows="3" placeholder="Brief product description..."></textarea>
                     </div>
-                    
+
+                    <!-- Image Upload -->
                     <div class="mb-3">
-                        <label for="image_url" class="form-label">Image URL (optional)</label>
-                        <input type="url" class="form-control" id="image_url" name="image_url" 
-                               placeholder="https://example.com/image.jpg">
-                        <div class="form-text">Leave empty to use placeholder</div>
+                        <label for="image" class="form-label">Product Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Allowed: PNG, JPG, JPEG, GIF, WEBP. Leave empty to use placeholder.
+                        </div>
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary">Add Product</button>
-                    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">Cancel</a>
+
+                    <!-- Image Preview -->
+                    <div class="mb-3" id="image-preview" style="display:none;">
+                        <label class="form-label">Preview</label><br>
+                        <img src="#" alt="Preview" class="img-thumbnail" style="max-height:150px;">
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('image').addEventListener('change', function(e) {
+    const preview = document.getElementById('image-preview');
+    const img = preview.querySelector('img');
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+    }
+});
+</script>
+
 {% endblock %}

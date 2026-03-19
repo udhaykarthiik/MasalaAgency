@@ -3,46 +3,85 @@
 {% block title %}{{ customer.shop_name }}{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h1>{{ customer.shop_name }}</h1>
-        <p class="text-muted">Customer Details & Order History</p>
-        <a href="{{ url_for('admin_customers') }}" class="btn btn-secondary">← Back to Customers</a>
-    </div>
+
+<div class="admin-page-header">
+    <h1><i class="fas fa-store me-2" style="color:#c084fc;"></i>{{ customer.shop_name }}</h1>
+    <p>Customer details &amp; order history</p>
 </div>
 
-<div class="row mb-4">
+<div class="mb-3">
+    <a href="{{ url_for('admin_customers') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Customers
+    </a>
+</div>
+
+<div class="row g-4 mb-4">
+
+    <!-- Customer Info Card -->
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Customer Information</h5>
+        <div class="card h-100">
+            <div class="card-header">
+                <h5><i class="fas fa-id-card me-2"></i>Customer Information</h5>
             </div>
             <div class="card-body">
-                <p><strong>Shop Name:</strong> {{ customer.shop_name }}</p>
-                <p><strong>Owner:</strong> {{ customer.owner_name or '-' }}</p>
-                <p><strong>Phone:</strong> {{ customer.phone }}</p>
-                <p><strong>Address:</strong> {{ customer.address or '-' }}</p>
-                <p><strong>Member Since:</strong> {{ customer.created_at.strftime('%d-%m-%Y') }}</p>
-                <p><strong>Total Orders:</strong> {{ orders|length }}</p>
+
+                <div class="mb-3 pb-3" style="border-bottom:1px solid rgba(147,51,234,0.15);">
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Shop Name</div>
+                    <div style="color:#ffffff; font-weight:700;">{{ customer.shop_name }}</div>
+                </div>
+
+                <div class="mb-3 pb-3" style="border-bottom:1px solid rgba(147,51,234,0.15);">
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Owner</div>
+                    <div style="color:#ffffff;">{{ customer.owner_name or '—' }}</div>
+                </div>
+
+                <div class="mb-3 pb-3" style="border-bottom:1px solid rgba(147,51,234,0.15);">
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Phone</div>
+                    <div style="color:#c084fc;"><i class="fas fa-phone me-1"></i>{{ customer.phone }}</div>
+                </div>
+
+                <div class="mb-3 pb-3" style="border-bottom:1px solid rgba(147,51,234,0.15);">
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Address</div>
+                    <div style="color:rgba(255,255,255,0.8);">{{ customer.address or '—' }}</div>
+                </div>
+
+                <div class="mb-3 pb-3" style="border-bottom:1px solid rgba(147,51,234,0.15);">
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Member Since</div>
+                    <div style="color:rgba(255,255,255,0.8);">{{ customer.created_at.strftime('%d-%m-%Y') }}</div>
+                </div>
+
+                <div>
+                    <div style="color:rgba(255,255,255,0.45); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem;">Total Orders</div>
+                    <div>
+                        <span style="background:rgba(147,51,234,0.2); color:#c084fc;
+                                     padding:0.25rem 0.75rem; border-radius:20px;
+                                     font-weight:700; font-size:1.1rem;
+                                     border:1px solid rgba(147,51,234,0.4);">
+                            {{ orders|length }}
+                        </span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-    
+
+    <!-- Order History Card -->
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Order History</h5>
+        <div class="card h-100">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Order History</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 {% if orders %}
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped mb-0">
                         <thead>
                             <tr>
                                 <th>Order #</th>
                                 <th>Date</th>
                                 <th>Product</th>
-                                <th>Quantity</th>
+                                <th>Qty</th>
                                 <th>Total</th>
                                 <th>Status</th>
                             </tr>
@@ -50,13 +89,17 @@
                         <tbody>
                             {% for order in orders %}
                             <tr>
-                                <td>{{ order.order_number }}</td>
+                                <td><strong style="color:#c084fc;">{{ order.order_number }}</strong></td>
                                 <td>{{ order.order_date.strftime('%d-%m-%Y') }}</td>
                                 <td>{{ order.product.name }}</td>
                                 <td>{{ order.quantity }} {{ order.product.unit }}</td>
-                                <td>₹{{ order.total_amount }}</td>
+                                <td><strong style="color:#c084fc;">₹{{ order.total_amount }}</strong></td>
                                 <td>
-                                    <span class="badge {% if order.status == 'pending' %}bg-warning{% elif order.status == 'delivered' %}bg-success{% else %}bg-info{% endif %}">
+                                    <span class="badge
+                                        {% if order.status == 'pending' %}bg-warning
+                                        {% elif order.status == 'delivered' %}bg-success
+                                        {% elif order.status == 'dispatched' %}bg-primary
+                                        {% else %}bg-info{% endif %}">
                                         {{ order.status }}
                                     </span>
                                 </td>
@@ -66,10 +109,16 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="text-center">No orders yet.</p>
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-bag fa-3x mb-3"
+                       style="color:rgba(192,132,252,0.3);"></i>
+                    <p style="color:rgba(255,255,255,0.4);">No orders yet.</p>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
+
 </div>
+
 {% endblock %}
