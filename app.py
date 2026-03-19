@@ -77,25 +77,14 @@ def load_user(user_id):
 # Image serving route with better error handling
 @app.route('/static/images/<path:filename>')
 def serve_image(filename):
-    """Serve images with fallback to placeholder"""
+    """Serve images directly from static folder"""
     try:
-        # Construct full path safely
-        images_dir = os.path.join(app.static_folder, 'images')
-        filepath = os.path.join(images_dir, filename)
-        
-        # Check if file exists
-        if os.path.exists(filepath) and os.path.isfile(filepath):
-            # Determine mimetype
-            mimetype = mimetypes.guess_type(filename)[0] or 'image/jpeg'
-            return send_file(filepath, mimetype=mimetype)
-        else:
-            # Log missing file (will appear in Render logs)
-            print(f"⚠️ Image not found: {filename}")
-            # Return placeholder
-            return redirect(f"https://via.placeholder.com/300x200?text={filename.replace('.jpg','').replace('-','+')}")
+        # Just serve the file directly - let Flask handle it
+        return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
     except Exception as e:
-        print(f"❌ Error serving image {filename}: {str(e)}")
-        return redirect(f"https://via.placeholder.com/300x200?text=Image+Error")
+        print(f"❌ Error serving {filename}: {str(e)}")
+        # If file not found, return a placeholder
+        return redirect(f"https://via.placeholder.com/300x200?text={filename.replace('.jpg','').replace('-','+')}")
 
 # Debug route to check images
 @app.route('/debug-images')
@@ -168,6 +157,164 @@ def fix_image_urls():
         'fixed_count': len(fixed),
         'fixed_products': fixed
     })
+
+# 🌟 NEW: Initialize database with products (for Render deployment)
+@app.route('/init-db')
+def init_database():
+    """Initialize database with products (for Render deployment)"""
+    try:
+        # Check if products exist
+        if Product.query.count() > 0:
+            return jsonify({
+                "message": f"Database already has {Product.query.count()} products",
+                "products": [p.name for p in Product.query.all()]
+            })
+        
+        # Add sample products
+        products = [
+            Product(
+                name="Everest Chicken Masala",
+                category="Chicken Masala",
+                price=85,
+                original_price=90,
+                description="Premium blend of spices for perfect chicken curry",
+                image_url="/static/images/everest-chicken.jpg",
+                stock=100,
+                unit="kg"
+            ),
+            Product(
+                name="MDH Chicken Masala",
+                category="Chicken Masala",
+                price=75,
+                original_price=80,
+                description="Traditional family recipe masala",
+                image_url="/static/images/mdh-chicken.jpg",
+                stock=150,
+                unit="kg"
+            ),
+            Product(
+                name="Badshah Chicken Masala",
+                category="Chicken Masala",
+                price=70,
+                description="Restaurant style chicken masala",
+                image_url="/static/images/badshah-chicken.jpg",
+                stock=200,
+                unit="kg"
+            ),
+            Product(
+                name="Shan Chicken Masala",
+                category="Chicken Masala",
+                price=95,
+                original_price=100,
+                description="Authentic Pakistani blend for chicken",
+                image_url="/static/images/shan-chicken.jpg",
+                stock=80,
+                unit="kg"
+            ),
+            Product(
+                name="Everest Garam Masala",
+                category="Garam Masala",
+                price=120,
+                description="Aromatic blend of premium spices",
+                image_url="/static/images/everest-garam.jpg",
+                stock=80,
+                unit="kg"
+            ),
+            Product(
+                name="MDH Garam Masala",
+                category="Garam Masala",
+                price=110,
+                description="Rich and aromatic garam masala",
+                image_url="/static/images/mdh-garam.jpg",
+                stock=120,
+                unit="kg"
+            ),
+            Product(
+                name="Badshah Garam Masala",
+                category="Garam Masala",
+                price=105,
+                description="Complete garam masala for all dishes",
+                image_url="/static/images/badshah-garam.jpg",
+                stock=90,
+                unit="kg"
+            ),
+            Product(
+                name="Everest Meat Masala",
+                category="Meat Masala",
+                price=130,
+                description="Special blend for mutton and beef",
+                image_url="/static/images/everest-meat.jpg",
+                stock=60,
+                unit="kg"
+            ),
+            Product(
+                name="MDH Meat Masala",
+                category="Meat Masala",
+                price=125,
+                description="Punjabi style meat masala",
+                image_url="/static/images/mdh-meat.jpg",
+                stock=70,
+                unit="kg"
+            ),
+            Product(
+                name="Everest Kitchen King",
+                category="All-in-One",
+                price=140,
+                description="All-purpose masala for daily cooking",
+                image_url="/static/images/everest-kitchen.jpg",
+                stock=150,
+                unit="kg"
+            ),
+        ]
+        
+        for product in products:
+            db.session.add(product)
+        
+        db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": f"✅ Added {len(products)} products to database",
+            "products": [p.name for p in Product.query.all()]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 🌟 NEW: Create admin user route
+@app.route('/create-admin')
+def create_admin():
+    """Create admin user for Render deployment"""
+    try:
+        # Check if admin exists
+        admin = User.query.filter_by(email="admin@masalaagency.com").first()
+        if admin:
+            return jsonify({
+                "message": "Admin already exists",
+                "email": admin.email,
+                "shop_name": admin.shop_name
+            })
+        
+        hashed_password = generate_password_hash('admin123')
+        admin = User(
+            email="admin@masalaagency.com",
+            password=hashed_password,
+            phone="9999999999",
+            shop_name="Masala Agency Admin",
+            owner_name="Admin",
+            address="Main Office",
+            is_agency=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "✅ Admin created successfully",
+            "email": "admin@masalaagency.com",
+            "password": "admin123"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Create database tables
 with app.app_context():
