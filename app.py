@@ -7,6 +7,14 @@ import os
 import mimetypes
 from flask import send_from_directory, abort, send_file
 from werkzeug.utils import safe_join
+import sys
+import logging
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+print("🚀 Starting Masala Agency App...")
+print(f"Python version: {sys.version}")
+print(f"Current directory: {os.getcwd()}")
+print(f"Files in directory: {os.listdir('.')}")
 
 
 # Initialize Flask app
@@ -756,6 +764,7 @@ def list_images():
     })
 
 if __name__ == '__main__':
-    # Get port from environment variable (for Render) or default to 5000
+    print("🔥 Entering main block...")
     port = int(os.environ.get('PORT', 5000))
+    print(f"Attempting to bind to port: {port}")
     app.run(host='0.0.0.0', port=port, debug=False)
