@@ -579,5 +579,34 @@ def page_not_found(e):
 def internal_server_error(e):
     return render_template('500.html'), 500
 
+
+@app.route('/list-images')
+def list_images():
+    """Lists all files in the static/images directory on the server."""
+    import os
+    from flask import jsonify
+    
+    images_dir = os.path.join(app.static_folder, 'images')
+    file_list = []
+    
+    if os.path.exists(images_dir):
+        try:
+            file_list = os.listdir(images_dir)
+        except Exception as e:
+            return jsonify({"error": f"Could not list directory: {str(e)}"})
+    else:
+        return jsonify({"error": f"Directory not found: {images_dir}"})
+    
+    # Filter for image files (optional)
+    image_files = [f for f in file_list if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))]
+    
+    return jsonify({
+        "images_directory": images_dir,
+        "directory_exists": os.path.exists(images_dir),
+        "all_contents": file_list,
+        "image_files_found": image_files,
+        "file_count": len(image_files)
+    })
+
 if __name__ == '__main__':
     app.run(debug=False)
