@@ -859,6 +859,61 @@ def admin_customer_detail(customer_id):
 
 
 # ── Error handlers ─────────────────────────────────────────────────────────────
+# ── Debug routes for troubleshooting ──────────────────────────────────────────
+
+@app.route('/list-images')
+def list_images():
+    """Lists all files in the static/images directory on the server."""
+    try:
+        images_dir = os.path.join(app.static_folder, 'images')
+        uploads_dir = app.config['UPLOAD_FOLDER']
+        
+        images = []
+        uploads = []
+        
+        if os.path.exists(images_dir):
+            images = os.listdir(images_dir)
+        
+        if os.path.exists(uploads_dir):
+            uploads = os.listdir(uploads_dir)
+        
+        image_files = [f for f in images if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))]
+        upload_files = [f for f in uploads if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))]
+        
+        return jsonify({
+            "images_directory": images_dir,
+            "directory_exists": os.path.exists(images_dir),
+            "images_found": image_files,
+            "image_count": len(image_files),
+            "uploads_directory": uploads_dir,
+            "uploads_exists": os.path.exists(uploads_dir),
+            "uploads_found": upload_files,
+            "upload_count": len(upload_files)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/debug-products')
+def debug_products():
+    """Check products in database"""
+    try:
+        products = Product.query.all()
+        return jsonify({
+            'total_products': len(products),
+            'products': [{
+                'id': p.id,
+                'name': p.name,
+                'category': p.category,
+                'price': p.price,
+                'stock': p.stock,
+                'image_url': p.image_url
+            } for p in products]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 
 @app.errorhandler(404)
 def page_not_found(e):
