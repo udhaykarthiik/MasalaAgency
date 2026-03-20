@@ -27,7 +27,40 @@ print("=" * 50)
 # ── App setup ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this-secret-key-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///masala.db'
+
+# ============================================
+# DATABASE CONFIGURATION - PostgreSQL Support
+# ============================================
+import os
+
+def get_database_url():
+    """Get database URL from environment, supports both PostgreSQL and SQLite"""
+    # Check for DATABASE_URL (Render sets this when you add the environment variable)
+    database_url = os.environ.get('DATABASE_URL')
+    
+    if database_url:
+        # Fix postgres:// to postgresql:// for SQLAlchemy
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        print(f"📊 Using PostgreSQL database")
+        return database_url
+    
+    # Check for individual PostgreSQL variables (alternative method)
+    pg_host = os.environ.get('PGHOST')
+    pg_port = os.environ.get('PGPORT', '5432')
+    pg_user = os.environ.get('PGUSER')
+    pg_password = os.environ.get('PGPASSWORD')
+    pg_database = os.environ.get('PGDATABASE')
+    
+    if all([pg_host, pg_user, pg_password, pg_database]):
+        print(f"📊 Using PostgreSQL database (from individual variables)")
+        return f"postgresql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_database}"
+    
+    # Fallback to SQLite for local development
+    print(f"📊 Using SQLite database (local development)")
+    return 'sqlite:///masala.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = get_database_url()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
@@ -60,8 +93,6 @@ def allowed_file(filename):
 
 def generate_order_number(user_id):
     """Generate a collision-safe order number."""
-    # FIX: added 4-char random suffix to prevent duplicate order numbers
-    # when the same user places multiple orders within the same second
     suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     return f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}{user_id}{suffix}"
 
@@ -151,6 +182,74 @@ def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 
+# ============================================
+# AUTO-INITIALIZE DATABASE WITH DEFAULT DATA
+# ============================================
+with app.app_context():
+    try:
+        db.create_all()
+        print("✅ Database tables created/verified")
+        
+        # Add sample products if none exist
+        if Product.query.count() == 0:
+            print("🌱 Seeding database with sample products...")
+            products_data = [
+                Product(name="Everest Chicken Masala", category="Chicken Masala", price=85, original_price=90,
+                       description="Premium blend of spices for perfect chicken curry", stock=100, unit="kg"),
+                Product(name="MDH Chicken Masala", category="Chicken Masala", price=75, original_price=80,
+                       description="Traditional family recipe masala", stock=150, unit="kg"),
+                Product(name="Badshah Chicken Masala", category="Chicken Masala", price=70,
+                       description="Restaurant style chicken masala", stock=200, unit="kg"),
+                Product(name="Shan Chicken Masala", category="Chicken Masala", price=95, original_price=100,
+                       description="Authentic Pakistani blend for chicken", stock=80, unit="kg"),
+                Product(name="Everest Garam Masala", category="Garam Masala", price=120,
+                       description="Aromatic blend of premium spices", stock=80, unit="kg"),
+                Product(name="MDH Garam Masala", category="Garam Masala", price=110,
+                       description="Rich and aromatic garam masala", stock=120, unit="kg"),
+                Product(name="Badshah Garam Masala", category="Garam Masala", price=105,
+                       description="Complete garam masala for all dishes", stock=90, unit="kg"),
+                Product(name="Everest Meat Masala", category="Meat Masala", price=130,
+                       description="Special blend for mutton and beef", stock=60, unit="kg"),
+                Product(name="MDH Meat Masala", category="Meat Masala", price=125,
+                       description="Punjabi style meat masala", stock=70, unit="kg"),
+                Product(name="Everest Kitchen King", category="All-in-One", price=140,
+                       description="All-purpose masala for daily cooking", stock=150, unit="kg"),
+            ]
+            
+            for p in products_data:
+                filename = p.name.lower().replace(' ', '-') + '.jpg'
+                p.image_url = f"/static/images/{filename}"
+                db.session.add(p)
+            
+            db.session.commit()
+            print(f"✅ Added {len(products_data)} sample products")
+        else:
+            print(f"✅ Database already has {Product.query.count()} products")
+        
+        # Create admin user if doesn't exist
+        if not User.query.filter_by(email="admin@masalaagency.com").first():
+            print("👑 Creating admin user...")
+            hashed_password = generate_password_hash('admin123')
+            admin = User(
+                email="admin@masalaagency.com",
+                password=hashed_password,
+                phone="9999999999",
+                shop_name="Masala Agency Admin",
+                owner_name="Admin",
+                address="Main Office",
+                is_agency=True
+            )
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Admin created - Email: admin@masalaagency.com / Password: admin123")
+        else:
+            print("✅ Admin user already exists")
+            
+    except Exception as e:
+        print(f"⚠️ Database initialization error: {str(e)}")
+        print("App will continue, but you may need to run /init-db manually")
+
+
 # ── Static file serving ────────────────────────────────────────────────────────
 
 @app.route('/static/images/<path:filename>')
@@ -222,7 +321,7 @@ def debug_products():
         return jsonify({'error': str(e)}), 500
 
 
-# ── Init / setup routes (protect or remove before deploying to production) ─────
+# ── Init / setup routes (for manual initialization if needed) ─────────────────
 
 @app.route('/init-db')
 def init_database():
@@ -499,7 +598,6 @@ def place_order(product_id):
             payment_status = 'pending'
         )
 
-        # FIX: use integer subtraction and guard against negative stock
         product.stock = max(0, product.stock - int(quantity))
 
         db.session.add(new_order)
@@ -584,7 +682,6 @@ def admin_products():
 def admin_add_product():
     if request.method == 'POST':
         try:
-            # FIX: original_price was never read from the form in the original code
             original_price_str = request.form.get('original_price')
             original_price     = float(original_price_str) if original_price_str else None
 
@@ -638,7 +735,6 @@ def admin_edit_product(product_id):
 
     if request.method == 'POST':
         try:
-            # FIX: original_price was never read from the form in the original code
             original_price_str    = request.form.get('original_price')
             product.original_price = float(original_price_str) if original_price_str else None
 
@@ -676,10 +772,6 @@ def admin_edit_product(product_id):
 @login_required
 @admin_required
 def admin_delete_product(product_id):
-    """
-    FIX: Changed from GET to POST — deleting via GET is a security risk.
-    The products.html template must submit a <form method="POST"> to this route.
-    """
     try:
         product      = Product.query.get_or_404(product_id)
         product_name = product.name
@@ -792,21 +884,7 @@ def create_agency():
         print(create_admin().get_json().get('message', 'Done'))
 
 
-# ── Database init ──────────────────────────────────────────────────────────────
-
-with app.app_context():
-    for attempt in range(3):
-        try:
-            db.create_all()
-            print(f"✅ Database ready (attempt {attempt + 1})")
-            break
-        except Exception as e:
-            print(f"⚠️  DB attempt {attempt + 1} failed: {e}")
-            if attempt < 2:
-                time.sleep(2)
-            else:
-                print("❌ Could not create database tables.")
-
+# ── Database init (already done above with auto-initialization) ───────────────
 
 # ── Entry point ────────────────────────────────────────────────────────────────
 
