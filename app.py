@@ -31,8 +31,6 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this-secret-key-
 # ============================================
 # DATABASE CONFIGURATION - PostgreSQL Support
 # ============================================
-import os
-
 def get_database_url():
     """Get database URL from environment, supports both PostgreSQL and SQLite"""
     # Check for DATABASE_URL (Render sets this when you add the environment variable)
@@ -308,13 +306,18 @@ def debug_images():
 
 @app.route('/debug-products')
 def debug_products():
+    """Check products in database"""
     try:
         products = Product.query.all()
         return jsonify({
             'total_products': len(products),
             'products': [{
-                'id': p.id, 'name': p.name, 'category': p.category,
-                'price': p.price, 'stock': p.stock, 'image_url': p.image_url
+                'id': p.id,
+                'name': p.name,
+                'category': p.category,
+                'price': p.price,
+                'stock': p.stock,
+                'image_url': p.image_url
             } for p in products]
         })
     except Exception as e:
@@ -324,7 +327,7 @@ def debug_products():
 # ── Init / setup routes (for manual initialization if needed) ─────────────────
 
 @app.route('/init-db')
-def init_database():
+def init_database_route():
     """Seed the database with default products. Remove this route in production."""
     try:
         if Product.query.count() > 0:
@@ -373,7 +376,7 @@ def init_database():
 
 
 @app.route('/create-admin')
-def create_admin():
+def create_admin_route():
     """Create the agency admin user. Remove this route in production."""
     try:
         admin = User.query.filter_by(email="admin@masalaagency.com").first()
@@ -858,7 +861,6 @@ def admin_customer_detail(customer_id):
         return render_template('500.html'), 500
 
 
-# ── Error handlers ─────────────────────────────────────────────────────────────
 # ── Debug routes for troubleshooting ──────────────────────────────────────────
 
 @app.route('/list-images')
@@ -894,26 +896,7 @@ def list_images():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/debug-products')
-def debug_products():
-    """Check products in database"""
-    try:
-        products = Product.query.all()
-        return jsonify({
-            'total_products': len(products),
-            'products': [{
-                'id': p.id,
-                'name': p.name,
-                'category': p.category,
-                'price': p.price,
-                'stock': p.stock,
-                'image_url': p.image_url
-            } for p in products]
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
+# ── Error handlers ─────────────────────────────────────────────────────────────
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -930,16 +913,14 @@ def internal_server_error(e):
 @app.cli.command("add-sample-products")
 def add_sample_products():
     with app.app_context():
-        print(init_database().get_json().get('message', 'Done'))
+        print(init_database_route().get_json().get('message', 'Done'))
 
 
 @app.cli.command("create-agency")
 def create_agency():
     with app.app_context():
-        print(create_admin().get_json().get('message', 'Done'))
+        print(create_admin_route().get_json().get('message', 'Done'))
 
-
-# ── Database init (already done above with auto-initialization) ───────────────
 
 # ── Entry point ────────────────────────────────────────────────────────────────
 
